@@ -1,0 +1,13 @@
+name "FileManagerExample";
+type executable;
+
+uses
+	Core,
+	Json,
+	WebSockets,
+	mcp_server_lib;
+
+file
+	"file_manager_main.cpp";
+
+options(GCC, CLANG, MSC) "-std=c++17";

@@ -1,0 +1,13 @@
+name "DataSaverExample";
+type executable;
+
+uses
+	Core,
+	Json,
+	WebSockets,
+	mcp_server_lib;
+
+file
+	"data_saver_main.cpp";
+
+options(GCC, CLANG, MSC) "-std=c++17";

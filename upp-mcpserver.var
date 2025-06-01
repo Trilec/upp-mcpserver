@@ -1,0 +1,24 @@
+// U++ Variant file for the upp-mcpserver project
+// This file can store common build configurations and options
+// for all packages within this assembly.
+
+// Example: Define a common output directory pattern.
+// $(package) - package name (e.g., McpServerGUI, mcp_server_lib)
+// $(config)  - build configuration (e.g., Debug, Release)
+// This places outputs in _build_output/<package_name>/<config_name>/
+output "_build_output/$(package)/$(config)";
+
+// Other examples of what could go here:
+// - Common compiler flags:
+//   flags(GCC) "-Wall -Wextra";
+//   flags(CLANG) "-Wall -Wextra";
+//   flags(MSC) "/W4";
+
+// - Default C++ standard (though also set in individual .upp files for clarity):
+//   CppStd defaultConfig("c++17");
+
+// - Default build method for the entire assembly (can also be set in TheIDE):
+//   default_method "Debug";
+
+// This file is optional. If it's empty or not present, TheIDE uses default settings.
+// Adding a basic output structure helps keep build artifacts organized.

@@ -1,0 +1,38 @@
+// U++ Package file for the McpServer core library (mcp_server_lib)
+// This package will be a static library.
+
+name "mcp_server_lib"; // Optional, but good practice for clarity if not same as filename
+type static_library;   // Specifies this package builds a static library
+
+uses
+	Core,
+	Json,
+	WebSockets;
+
+// List of files belonging to this package.
+// Paths are relative to this .upp file's location (project root).
+file
+	// Public Headers (typically in 'include' or a subdirectory relative to project root)
+	"include/McpServer.h" header,
+	// Note: U++ often uses local include paths within a package.
+	// If McpServer.h is intended to be #include <mcp_server_lib/McpServer.h>,
+	// then 'header' keyword might be used differently or path adjusted.
+	// For now, assuming direct path usage and "include" is part of include paths.
+	// The 'header' keyword makes it available to other packages that 'use' this one.
+
+	// Source files
+	"src/McpServer.cpp",
+	"src/ConfigManager.h" header, // Also a header used by McpServerWindow/Main
+	"src/ConfigManager.cpp";
+
+// Optionally, specify include paths if needed beyond the default package directory.
+// include "."; // Current directory (where .upp is) is usually implicit.
+// include "include"; // If headers are in 'project_root/include' and sources in 'project_root/src'
+                   // and this .upp is in project_root.
+                   // U++ usually makes files within the package directly accessible.
+                   // The "include/" prefix in file paths handles this.
+
+// No mainfile for a library.
+
+options(GCC, CLANG, MSC) "-std=c++17"; // Consistent C++ standard
+// Add any library-specific compile options here if necessary.

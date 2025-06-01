@@ -1,0 +1,41 @@
+// Main U++ package file for the MCP Server project
+// This file typically groups other packages.
+
+uses
+	Core, // Standard U++ Core library
+	CtrlLib, // For GUI applications
+	Json,    // For JSON parsing
+	WebSockets; // For WebSocket server functionality
+
+// Define groups for better organization in TheIDE
+group "Library";
+	package mcp_server_lib type static_library uses Core, Json, WebSockets file "mcp_server_lib.upp";
+
+group "Application";
+	package McpServerGUI type executable uses Core, CtrlLib, mcp_server_lib file "McpServerGUI.upp";
+
+group "Examples";
+	// Each example will be its own package, listed here or within their subdirectories' .upp files
+	// For now, we'll define them directly if their .upp files are in the root.
+	// Or, more commonly, we'd point to their .upp files in their respective directories.
+	// Let's assume example .upp files will be in their subdirectories.
+	// So, we don't list individual example packages here yet, but TheIDE can scan for them
+	// if they are in subdirectories.
+	// For explicit listing (better for clarity if .upp files are not in root):
+	// package FileReaderExample type executable uses Core, Json, WebSockets, mcp_server_lib file "examples/file_reader/file_reader.upp";
+	// package MathCalculatorExample type executable uses Core, Json, WebSockets, mcp_server_lib file "examples/math_calculator/math_calculator.upp";
+	// ... and so on for other examples.
+	// For now, let's keep this group empty and add example packages in their own dirs later.
+	// TheIDE can discover them.
+	// The plan says: Create [ExampleName].upp (e.g., examples/file_reader/file_reader.upp)
+	// This means they are in subdirs.
+	// So, the "Examples" group here is just a logical separator in TheIDE if we add files to it.
+	// We won't add packages to it here.
+
+group "Tests";
+	// Similar to examples, the test package .upp file will be in the tests/ directory.
+	// package McpServerTests type executable uses Core, Test, mcp_server_lib file "tests/McpServerTests.upp";
+
+main_package "Application"; // Specifies that McpServerGUI is the default build target.
+
+options(GCC, CLANG, MSC) "-std=c++17"; // Example: Enforce C++17 standard

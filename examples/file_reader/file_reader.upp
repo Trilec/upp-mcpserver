@@ -1,0 +1,22 @@
+// U++ Package file for the FileReaderExample
+
+name "FileReaderExample";
+type executable; // Console executable
+
+uses
+	Core,
+	Json,
+	WebSockets,
+	mcp_server_lib; // Depends on our core server library
+
+// Main file for this example package
+// Path is relative to this .upp file.
+file
+	"file_reader_main.cpp";
+
+options(GCC, CLANG, MSC) "-std=c++17";
+
+// For this example to find mcp_server_lib, TheIDE needs to know its location.
+// If mcp_server_lib.upp is in the project root, and this is in examples/file_reader/,
+// TheIDE's assembly concept usually handles this linkage when the whole project is loaded.
+// The `uses mcp_server_lib;` line declares the dependency.
