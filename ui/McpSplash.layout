@@ -1,0 +1,6 @@
+<CtrlLayout>
+  <TopWindow name="McpSplash" title="Starting MCP Server">
+    <StaticText name="txtInfo" multiLine="true" readOnly="true" />
+    <Button     name="btnProceed" text="Proceed" />
+  </TopWindow>
+</CtrlLayout>

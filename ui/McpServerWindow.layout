@@ -1,0 +1,84 @@
+<CtrlLayout>
+  <TopWindow name="McpServerWindow" title="MCP Server">
+    <!-- Title Bar -->
+    <Bar name="TitleBar">
+      <Button name="btnMenu"       text="☰"               />
+      <Label  name="lblStatus"     text="Status: {Stopped}" />
+      <Label  name="lblInstallPath" text="Installed at: {InstallPath}" />
+    </Bar>
+    <HBox>
+      <!-- Collapsible Sidebar (width=200) -->
+      <VBox name="Sidebar" width="200">
+        <Button name="btnToolsIcon"    icon="ui/icons/tools.png"    text=" Tools"       />
+        <Button name="btnConfigIcon"   icon="ui/icons/config.png"   text=" Config"      />
+        <Button name="btnPermsIcon"    icon="ui/icons/perm_read.png" text=" Permissions" />
+        <Button name="btnSandboxIcon"  icon="ui/icons/perm_search.png" text=" Sandbox"     />
+        <Button name="btnLogsIcon"     icon="ui/icons/logs.png"     text=" Logs"        />
+      </VBox>
+
+      <!-- StackCtrl: one panel per sidebar button -->
+      <StackCtrl name="MainStack">
+        <!-- Tools Panel -->
+        <VBox name="ToolsPanel">
+          <HBox>
+            <Label text="Available Tools" />
+            <Label text="Enabled Tools"   />
+          </HBox>
+          <HBox>
+            <ArrayCtrl name="toolsAvailable" columns="Tool Name" />
+            <ArrayCtrl name="toolsEnabled"   columns="Tool Name" />
+          </HBox>
+          <HBox>
+            <Button name="btnStart" text="Start Server" />
+            <Button name="btnStop"  text="Stop Server" />
+          </HBox>
+        </VBox>
+        <!-- Configuration Panel -->
+        <VBox name="ConfigPanel">
+          <HBox>
+            <Label text="Server Port:" />
+            <EditInt name="portEdit" min="1" max="65535" />
+          </HBox>
+          <HBox>
+            <Label text="Bind To:" />
+            <DropList name="bindList" items="127.0.0.1;0.0.0.0" />
+          </HBox>
+          <Label name="lblInstallPathConfig" text="Installed at: {InstallPath}" /> <!-- Changed name to avoid conflict -->
+        </VBox>
+        <!-- Permissions Panel -->
+        <VBox name="PermsPanel">
+          <CheckBox name="chkRead"    text="Read Files"            />
+          <CheckBox name="chkWrite"   text="Write Files"           />
+          <CheckBox name="chkDelete"  text="Delete Files"          />
+          <CheckBox name="chkRename"  text="Rename Files"          />
+          <CheckBox name="chkCreateDir" text="Create Directories"   />
+          <CheckBox name="chkSearch"  text="Search Directories"     />
+          <CheckBox name="chkExec"    text="Execute Processes"      />
+          <CheckBox name="chkNetwork" text="Network Access"         />
+          <CheckBox name="chkExternal" text="External Storage"      />
+          <CheckBox name="chkAttr"    text="Change Attributes"       />
+          <CheckBox name="chkIPC"     text="IPC (Pipes/Sockets)"     />
+        </VBox>
+        <!-- Sandbox Panel -->
+        <VBox name="SandboxPanel">
+          <Label text="Allowed Folders (Sandbox Roots):" />
+          <ArrayCtrl name="sandboxRootsList" columns="Path" />
+          <HBox>
+            <Button name="btnAddRoot"    text="Add Folder…" />
+            <Button name="btnRemoveRoot" text="Remove"    />
+          </HBox>
+        </VBox>
+        <!-- Logs Panel -->
+        <VBox name="LogsPanel">
+          <Label text="Log:" />
+          <EditString name="logConsole" multiLine="true" readOnly="true" />
+          <HBox>
+            <Button name="btnClearLogs" text="Clear Logs" />
+            <Label text="Max Log Size (MB):" />
+            <EditInt name="maxLogSizeEdit" min="1" max="100" />
+          </HBox>
+        </VBox>
+      </StackCtrl>
+    </HBox>
+  </TopWindow>
+</CtrlLayout>
