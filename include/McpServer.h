@@ -1,116 +1,81 @@
 #pragma once
 #include <Core/Core.h>
-#include <WebSockets/WebSockets.h>
+#include <WebSockets/WebSockets.h> // Includes Json/Json.h for JsonObject, Value
 
 using namespace Upp;
 
-/**
- * @brief Permission flags to control what AI tools can do.
- */
 struct Permissions {
-    bool allowReadFiles       = false;  ///< Read file contents
-    bool allowWriteFiles      = false;  ///< Create/overwrite files
-    bool allowDeleteFiles     = false;  ///< Delete files
-    bool allowRenameFiles     = false;  ///< Rename/move files
-    bool allowCreateDirs      = false;  ///< Create directories
-    bool allowSearchDirs      = false;  ///< List/search folders
-    bool allowExec            = false;  ///< Execute external processes
-    bool allowNetworkAccess   = false;  ///< Network calls (HTTP, sockets)
-    bool allowExternalStorage = false;  ///< Access removable drives
-    bool allowChangeAttributes= false;  ///< Modify file timestamps/attributes
-    bool allowIPC             = false;  ///< Open named pipes / local sockets
+    bool allowReadFiles=false; bool allowWriteFiles=false; bool allowDeleteFiles=false;
+    bool allowRenameFiles=false; bool allowCreateDirs=false; bool allowSearchDirs=false;
+    bool allowExec=false; bool allowNetworkAccess=false; bool allowExternalStorage=false;
+    bool allowChangeAttributes=false; bool allowIPC=false;
+
+    // Default constructor for easy initialization
+    Permissions() = default;
 };
 
-/**
- * @brief Signature for a tool’s callback function.
- *        Receives arguments as JSON and returns result as JSON.
- */
-using ToolFunc = std::function<JsonValue(const JsonObject& args)>;
+using ToolFunc = std::function<Value(const JsonObject& args)>; // U++ uses Value for JsonValue
 
-/**
- * @brief Metadata for a registered tool (name, description, parameters).
- */
 struct ToolDefinition {
-    ToolFunc func;             ///< The function to call
-    String description;        ///< Short sentence about what the tool does
-    JsonObject parameters;     ///< JSON schema for arguments
+    ToolFunc func;
+    String description;
+    JsonObject parameters;
 };
 
-/**
- * @brief Core MCP Server: WebSocket server that manages tools, permissions, and sandboxing.
- */
 class McpServer : public WebSocketServer {
 public:
-    /**
-     * @param port         The TCP port for WebSocket server (e.g., 5000).
-     * @param maxClients   Maximum concurrent WebSocket clients.
-     */
     McpServer(int port, int maxClients = 10);
 
-    /** Register a tool (plugin) by name and definition. */
-    void            AddTool(const String& toolName, const ToolDefinition& toolDef);
+    void AddTool(const String& toolName, const ToolDefinition& toolDef);
+    Vector<String> GetAllToolNames() const;
+    void EnableTool(const String& toolName);
+    void DisableTool(const String& toolName);
+    bool IsToolEnabled(const String& toolName) const;
+    JsonObject GetToolManifest() const;
 
-    /** Return a list of all registered tool names (for GUI listing). */
-    Vector<String>  GetAllToolNames() const;
+    Permissions& GetPermissions(); // Non-const for modification by GUI/Config
+    const Permissions& GetPermissions() const; // Const for read-only access
 
-    /** Enable a registered tool so that it appears in the manifest. */
-    void            EnableTool(const String& toolName);
-
-    /** Disable a tool (hide from manifest). */
-    void            DisableTool(const String& toolName);
-
-    /** Check if a tool is currently enabled. */
-    bool            IsToolEnabled(const String& toolName) const;
-
-    /** Build a JSON manifest of all enabled tools (name→metadata). */
-    JsonObject      GetToolManifest() const;
-
-    /** Access or modify permission flags. */
-    Permissions&         GetPermissions();
-    const Permissions&   GetPermissions() const;
-
-    /** Add or remove a root directory for sandboxing. */
-    void            AddSandboxRoot(const String& root);
-    void            RemoveSandboxRoot(const String& root);
+    Vector<String>& GetSandboxRoots(); // Non-const for modification by GUI/Config
     const Vector<String>& GetSandboxRoots() const;
+    void AddSandboxRoot(const String& root); // Already present
+    void RemoveSandboxRoot(const String& root); // Already present
+    void EnforceSandbox(const String& path) const;
 
-    /** Throw if `path` is outside all defined sandbox roots. */
-    void            EnforceSandbox(const String& path) const;
+    void ConfigureBind(bool allInterfaces);
+    bool GetBindAllInterfaces() const { return bindAll; } // Added for status display
 
-    /** Specify whether to bind to “0.0.0.0” (all interfaces) or just “127.0.0.1”. */
-    void            ConfigureBind(bool allInterfaces);
+    bool StartServer(); // Will be minimal for now
+    bool StopServer();  // Will be minimal for now
+    bool IsListening() const { return is_listening; } // Added
 
-    /** Start listening on WebSocket; returns true if bound successfully. */
-    bool            StartServer();
+    void SetPort(int port);
+    int GetPort() const { return serverPort; } // Added for status display
+    String GetListenHost() const; // Added for status display (can be stubbed)
 
-    /** Stop listening and disconnect all clients. */
-    void            StopServer();
+    void SetLogCallback(std::function<void(const String&)> cb);
+    // Helper for McpServer to log its own messages via the callback
+    void Log(const String& message);
 
-    /** Set the TCP port (before StartServer). */
-    void            SetPort(int port);
+    McpServer& GetServer() { return *this; } // For chaining or direct access
 
-    /** Supply a callback to receive log messages (for GUI or file). */
-    void            SetLogCallback(std::function<void(const String&)> cb);
+    // Public member to access the log callback, needed by McpApplication for tool registration log
+    std::function<void(const String&)> logCallback;
+
 
 private:
-    HashMap<String, ToolDefinition> allTools;      ///< All registered tools
-    HashSet<String>                 enabledTools;  ///< Currently enabled tool names
-    Permissions                     perms;         ///< Current permission flags
-    Vector<String>                  sandboxRoots;  ///< Allowed directories for file I/O
-    int                             maxClientsAllowed;
-    bool                            bindAll;       ///< Bind to 0.0.0.0 if true
-    int                             serverPort;    ///< The configured port number
-    std::function<void(const String&)> logCallback;///< To emit log messages
+    HashMap<String, ToolDefinition> allTools;
+    HashSet<String> enabledTools;
+    Permissions perms;
+    Vector<String> sandboxRoots;
+    int maxClientsAllowed;
+    bool bindAll;
+    int serverPort;
+    // std::function<void(const String&)> logCallback; // Made public
+    bool is_listening = false; // Added state for IsListening, Start/StopServer
 
-    /** Handle a new WebSocket connection: send manifest, bind receive handler. */
-    void            OnNewConnection(WebSocketSocket& socket);
-
-    /** Process an incoming JSON message (tool_call, etc.). */
-    void            ProcessMessage(WebSocketSocket& socket, const JsonObject& msgObj);
-
-    /** Send a JSON object over the socket. */
-    void            SendJson(WebSocketSocket& socket, const JsonObject& obj);
-
-    /** Internal helper: is `child` under `parent` (path matching). */
-    static bool     PathUnderRoot(const String& parent, const String& child);
+    void OnNewConnection(WebSocket& socket); // Changed WebSocketSocket& to WebSocket&
+    void ProcessMessage(WebSocket& socket, const JsonObject& msgObj); // Changed WebSocketSocket& to WebSocket&
+    void SendJson(WebSocket& socket, const JsonObject& obj); // Changed WebSocketSocket& to WebSocket&
+    static bool PathUnderRoot(const String& parent, const String& child);
 };
