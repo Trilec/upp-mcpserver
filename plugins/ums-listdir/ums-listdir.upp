@@ -1,4 +1,4 @@
-name "DataSaverExample";
+name "ums-listdir-plugin"; // Updated package name
 type executable;
 
 uses
@@ -8,6 +8,6 @@ uses
 	mcp_server_lib;
 
 file
-	"data_saver_main.cpp";
+	"simple_dir_explorer_main.cpp";
 
 options(GCC, CLANG, MSC) "-std=c++17";

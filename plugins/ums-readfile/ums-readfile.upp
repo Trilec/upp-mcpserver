@@ -1,0 +1,13 @@
+name "ums-readfile-plugin"; // Updated package name
+type executable;
+
+uses
+	Core,
+	Json,
+	WebSockets,
+	mcp_server_lib;
+
+file
+	"file_reader_main.cpp"; // Filename of cpp source remains the same
+
+options(GCC, CLANG, MSC) "-std=c++17";

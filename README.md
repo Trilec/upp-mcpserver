@@ -5,7 +5,7 @@ U++ MCP Server is a server application built with the [U++ framework](https://ww
 ## Features
 
 - **WebSocket Interface**: Exposes tools over WebSockets using a simple JSON protocol.
-- **Tool Manifest**: Provides a JSON manifest of available tools, their descriptions, and parameter schemas.
+- **Tool Manifest**: Provides a JSON manifest of available tools (now `ums-` prefixed), their descriptions, and parameter schemas.
 - **Plugin-Style Tools**: Tools can be registered in C++ code. The GUI allows enabling/disabling tools at runtime.
 - **Fine-Grained Permissions**: A comprehensive set of permission flags (e.g., `allowReadFiles`, `allowExec`) to control tool capabilities.
 - **Sandboxing**: Restricts file system access for tools to user-defined root directories.
@@ -28,7 +28,7 @@ U++ MCP Server is a server application built with the [U++ framework](https://ww
 - `/ui`: U++ layout files (`.layout`) and icon resources.
 - `/config`: Runtime configuration (`config.json`) and logs (`/log`).
 - `/tests`: Unit test stubs.
-- `/examples`: Standalone example applications demonstrating how to implement and register different tools. Each example runs its own McpServer instance on a separate port.
+- `/plugins`: Standalone plugin applications demonstrating how to implement and register different tools (e.g., `plugins/ums-readfile/`). Each plugin runs its own McpServer instance on a separate port.
 
 ## Getting Started
 
@@ -42,36 +42,27 @@ U++ MCP Server is a server application built with the [U++ framework](https://ww
 **Using TheIDE (Recommended for U++)**:
 
 1.  **Open TheIDE**.
-2.  Create a new **main package** (assembly) named `upp-mcpserver` (or open if `.upp` files are provided later).
-3.  Add the following sub-packages (or configure them within the main package):
-    *   A **StaticLibrary** package (e.g., `mcp_server_lib`) containing:
-        *   `include/McpServer.h`
-        *   `src/McpServer.cpp`
-        *   `src/ConfigManager.h`, `src/ConfigManager.cpp`
-        *   It should depend on U++ packages: `Core`, `Json`, `WebSockets`.
-    *   An **Executable (CtrlLib)** package for the main GUI application (e.g., `McpServerGUI`):
-        *   `src/Main.cpp`
-        *   `src/McpServerWindow.h`, `src/McpServerWindow.cpp`
-        *   `src/McpSplash.h`, `src/McpSplash.cpp`
-        *   `ui/McpServerWindow.layout`, `ui/McpSplash.layout` (and icon resources from `ui/icons/`)
-        *   It should depend on `mcp_server_lib` and U++ packages: `Core`, `CtrlLib`.
-    *   For each example in `examples/`:
-        *   An **Executable (Console)** package (e.g., `FileReaderExample`):
-            *   `examples/file_reader/file_reader_main.cpp`
-            *   It should depend on `mcp_server_lib` and U++ packages: `Core`, `Json`, `WebSockets`.
-4.  Set the main package to `upp-mcpserver`.
-5.  Select the `McpServerGUI` executable as the build target.
+2.  Open the main package file `upp-mcpserver.upp` (or the root project directory).
+3.  TheIDE should discover the packages:
+    *   `mcp_server_lib` (StaticLibrary)
+    *   `McpServerGUI` (Executable GUI application)
+    *   Individual plugin packages (e.g., `ums-readfile-plugin`, `ums-calc-plugin`) located in `plugins/<plugin-name>/<plugin-name>.upp`.
+    *   `McpServerTests` (Test executable).
+4.  Set the main package to `upp-mcpserver` (usually the one you opened).
+5.  Select the `McpServerGUI` executable as the build target in TheIDE's build configuration dropdown.
 6.  **Build and Run** (e.g., by pressing F5 or using the build menu).
+    You can also select individual plugin executables (e.g., `ums-readfile-plugin`) as targets to build and run them independently.
 
 **Using CMake (Placeholder - Detailed U++ CMake setup is complex)**:
 
-A full CMake build system for U++ projects requires proper handling of U++'s package system and code generation (e.g., from `.layout` files). The provided `CMakeLists.txt` files are basic placeholders.
+A full CMake build system for U++ projects requires proper handling of U++'s package system. The provided `CMakeLists.txt` files are basic placeholders.
 ```bash
 # Placeholder commands - actual U++ CMake build is more involved
 # mkdir build && cd build
 # cmake ..
 # make
 # ./McpServerGUI
+# ./plugins/ums-readfile/ums-readfile-main # Example of running a plugin
 ```
 
 ### First Run
@@ -83,15 +74,16 @@ A full CMake build system for U++ projects requires proper handling of U++'s pac
 
 ## Using the MCP Server
 
-Clients connect via WebSockets (e.g., `ws://localhost:5000/`).
+Clients connect via WebSockets (e.g., `ws://localhost:5000/`). Tool names are now prefixed (e.g., `ums-readfile`).
 
 1.  **On Connection**: The server sends a "manifest" message:
     ```json
     {
       "type": "manifest",
       "tools": {
-        "tool_name_1": { "description": "...", "parameters": { /* schema */ } },
-        "tool_name_2": { "description": "...", "parameters": { /* schema */ } }
+        "ums-readfile": { "description": "...", "parameters": { /* schema */ } },
+        "ums-calc": { "description": "...", "parameters": { /* schema */ } }
+        // ... other ums-prefixed tools
       }
     }
     ```
@@ -100,46 +92,34 @@ Clients connect via WebSockets (e.g., `ws://localhost:5000/`).
     ```json
     {
       "type": "tool_call",
-      "tool": "tool_name_to_call",
+      "tool": "ums-readfile", // Use the new prefixed name
       "args": { /* arguments matching the tool's parameter schema */ }
     }
     ```
 
-3.  **Receiving a Response**:
-    - Success:
-      ```json
-      {
-        "type": "tool_response",
-        "result": { /* tool's JSON result */ }
-      }
-      ```
-    - Error:
-      ```json
-      {
-        "type": "error",
-        "message": "Error description (e.g., permission denied, sandbox violation, tool error)"
-      }
-      ```
+3.  **Receiving a Response**: (Structure remains the same)
+    - Success: `{"type": "tool_response", "result": { ... }}`
+    - Error: `{"type": "error", "message": "Error description"}`
 
-Refer to the Python client pseudocode in the design brief or `examples/python_client/client.py` (if created) for a usage example.
+Refer to the Python client pseudocode in the original design brief (remember to update tool names in client calls) or a future `plugins/python_client/client.py` for usage examples.
 
-## Example Tools Provided
+## Plugin Tools Provided
 
-*(These are registered by `Main.cpp` in the main GUI application and also demonstrated as standalone servers in the `/examples` directory)*
+*(These are registered by `Main.cpp` in the main GUI application and also demonstrated as standalone servers in the `/plugins` directory. Tool names are now prefixed.)*
 
--   **`read_file`**: Reads contents of a file.
+-   **`ums-readfile`**: Reads contents of a file.
     -   Permissions: `allowReadFiles`
     -   Sandbox: Yes
--   **`calculate`**: Performs basic arithmetic.
+-   **`ums-calc`**: Performs basic arithmetic.
     -   Permissions: None
     -   Sandbox: No
--   **`create_dir`**: Creates a directory.
+-   **`ums-createdir`**: Creates a directory.
     -   Permissions: `allowCreateDirs`
     -   Sandbox: Yes
--   **`list_dir`**: Lists files and folders.
+-   **`ums-listdir`**: Lists files and folders.
     -   Permissions: `allowSearchDirs`
     -   Sandbox: Yes
--   **`save_data`**: Writes text to a file.
+-   **`ums-writefile`**: Writes text to a file. (Formerly `save_data`)
     -   Permissions: `allowWriteFiles`
     -   Sandbox: Yes
 

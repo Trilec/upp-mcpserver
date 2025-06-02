@@ -1,4 +1,4 @@
-name "SimpleDirExplorerExample";
+name "ums-calc-plugin"; // Updated package name
 type executable;
 
 uses
@@ -8,6 +8,6 @@ uses
 	mcp_server_lib;
 
 file
-	"simple_dir_explorer_main.cpp";
+	"math_calculator_main.cpp";
 
 options(GCC, CLANG, MSC) "-std=c++17";

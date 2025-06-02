@@ -1,0 +1,13 @@
+name "ums-writefile-plugin"; // Updated package name
+type executable;
+
+uses
+	Core,
+	Json,
+	WebSockets,
+	mcp_server_lib;
+
+file
+	"data_saver_main.cpp"; // C++ source filename was not changed, only its registered tool name
+
+options(GCC, CLANG, MSC) "-std=c++17";

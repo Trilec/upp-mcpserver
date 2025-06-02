@@ -13,110 +13,175 @@
 #include <Core/IO/PathUtil.h>
 #include <Core/TimeDate.h>
 #include <Core/Trace/Trace.h>
+#include <Core/ValueUtil.h>
 
-// Updated PlaceholderToolLogic to use Exc for "not implemented"
-JsonValue PlaceholderToolLogic(const String& toolName, McpServer& server, const JsonObject& args) {
-    server.Log("Tool '" + toolName + "' called (placeholder implementation). Args: " + AsJson(args)); // Use McpServer's Log method
-    throw Exc("Tool '" + toolName + "' not fully implemented yet."); // Using Exc
+// Tool function implementations (names like ReadFileTool remain for the C++ functions)
+Value ReadFileTool(McpServer& server, const JsonObject& args) {
+    server.Log("ums-readfile (ReadFileTool) invoked. Args: " + AsJson(args));
+    if (!server.GetPermissions().allowReadFiles) {
+        throw Exc("Permission denied: Read Files permission is required for 'ums-readfile' tool.");
+    }
+    String path = args.Get("path", "").ToString();
+    if (path.IsEmpty()) {
+        throw Exc("Argument error: 'path' is a required string argument for 'ums-readfile' tool.");
+    }
+    server.EnforceSandbox(path);
+    String content = LoadFile(path);
+    if (content.IsVoid()) {
+        throw Exc("File operation error: Could not read file '" + path + "'. Ensure file exists and is accessible.");
+    }
+    server.Log("ums-readfile success for path: " + path);
+    return content;
 }
 
-// Tool stubs now ensure they throw Exc for argument errors or permission issues.
-JsonValue ReadFileTool(McpServer& server, const JsonObject& args) {
-    if (!server.GetPermissions().allowReadFiles) throw Exc("Permission denied: Read Files required for read_file.");
-    String path = args.Get("path", "");
-    if (path.IsEmpty()) throw Exc("Argument error: 'path' is required for read_file.");
-    server.EnforceSandbox(path);
-    // Actual LoadFile would go here in full implementation.
-    return PlaceholderToolLogic("read_file", server, args); // Still calls placeholder for now
+Value CalculateTool(McpServer& server, const JsonObject& args) {
+    server.Log("ums-calc (CalculateTool) invoked. Args: " + AsJson(args));
+    Value val_a = args.Get("a"); Value val_b = args.Get("b");
+    String operation = args.Get("operation", "").ToString();
+    if (!val_a.IsNumber()) throw Exc("Argument error: 'a' must be a number for 'ums-calc' tool."); // IsNumber is more general
+    if (!val_b.IsNumber()) throw Exc("Argument error: 'b' must be a number for 'ums-calc' tool.");
+    if (operation.IsEmpty()) throw Exc("Argument error: 'operation' (string: add, subtract, multiply, divide) is required for 'ums-calc' tool.");
+    double a = val_a.To<double>(); double b = val_b.To<double>();
+    if (operation == "add") return a + b; if (operation == "subtract") return a - b;
+    if (operation == "multiply") return a * b;
+    if (operation == "divide") {
+        if (b == 0) throw Exc("Arithmetic error: Division by zero in 'ums-calc' tool.");
+        return a / b;
+    }
+    throw Exc("Argument error: Unknown operation '" + operation + "'. Supported: add, subtract, multiply, divide.");
 }
-JsonValue CalculateTool(McpServer& server, const JsonObject& args) {
-    if (args.Get("a").IsVoid()) throw Exc("Argument error: 'a' is required for calculate.");
-    if (args.Get("b").IsVoid()) throw Exc("Argument error: 'b' is required for calculate.");
-    if (args.Get("operation").IsVoid() || args.Get("operation").ToString().IsEmpty()) throw Exc("Argument error: 'operation' is required for calculate.");
-    // Actual calculation logic here.
-    return PlaceholderToolLogic("calculate", server, args);
-}
-JsonValue CreateDirTool(McpServer& server, const JsonObject& args) {
-    if (!server.GetPermissions().allowCreateDirs) throw Exc("Permission denied: Create Directories required for create_dir.");
-    String path = args.Get("path", "");
-    if (path.IsEmpty()) throw Exc("Argument error: 'path' is required for create_dir.");
+
+Value CreateDirTool(McpServer& server, const JsonObject& args) {
+    server.Log("ums-createdir (CreateDirTool) invoked. Args: " + AsJson(args));
+    if (!server.GetPermissions().allowCreateDirs) {
+        throw Exc("Permission denied: Create Directories permission is required for 'ums-createdir' tool.");
+    }
+    String path = args.Get("path", "").ToString();
+    if (path.IsEmpty()) {
+        throw Exc("Argument error: 'path' is a required string argument for 'ums-createdir' tool.");
+    }
     server.EnforceSandbox(path);
-    return PlaceholderToolLogic("create_dir", server, args);
+    if (DirectoryExists(path)) {
+        server.Log("ums-createdir: Directory '" + path + "' already exists."); return true;
+    }
+    if (!RealizeDirectory(path)) {
+        throw Exc("File system error: Failed to create directory '" + path + "'. Check path validity and OS permissions.");
+    }
+    server.Log("ums-createdir success: Directory '" + path + "' created.");
+    return true;
 }
-JsonValue ListDirTool(McpServer& server, const JsonObject& args) {
-    if (!server.GetPermissions().allowSearchDirs) throw Exc("Permission denied: Search Directories required for list_dir.");
-    String path = args.Get("path", ".");
-    server.EnforceSandbox(path);
-    return PlaceholderToolLogic("list_dir", server, args);
+
+Value ListDirTool(McpServer& server, const JsonObject& args) {
+    server.Log("ums-listdir (ListDirTool) invoked. Args: " + AsJson(args));
+    if (!server.GetPermissions().allowSearchDirs) {
+        throw Exc("Permission denied: Search Directories permission is required for 'ums-listdir' tool.");
+    }
+    String path_arg = args.Get("path", ".").ToString();
+    String effective_path = path_arg;
+    if (path_arg == ".") {
+        if (!server.GetSandboxRoots().IsEmpty()) { effective_path = server.GetSandboxRoots()[0]; }
+        else { server.Log("Warning: ums-listdir for '.' with no sandbox roots, using current working directory."); effective_path = GetCurrentDirectory(); }
+    }
+    server.EnforceSandbox(effective_path);
+    JsonArray result_array; FindFile ff(AppendFileName(effective_path, "*.*"));
+    while (ff) {
+        JsonObject file_entry; file_entry("name", ff.GetName());
+        file_entry("is_dir", ff.IsDirectory()); file_entry("is_file", ff.IsFile());
+        if (ff.IsFile()) { file_entry("size", ff.GetLength()); }
+        result_array.Add(file_entry); ff.Next();
+    }
+    server.Log("ums-listdir success for path: " + effective_path + ". Found " + AsString(result_array.GetCount()) + " items.");
+    return result_array;
 }
-JsonValue SaveDataTool(McpServer& server, const JsonObject& args) {
-    if (!server.GetPermissions().allowWriteFiles) throw Exc("Permission denied: Write Files required for save_data.");
-    String path = args.Get("path", "");
-    if (path.IsEmpty()) throw Exc("Argument error: 'path' is required for save_data.");
-    if (args.Get("data").IsVoid()) throw Exc("Argument error: 'data' is required for save_data.");
+
+// Renamed from SaveDataTool to WriteFileTool to match new name "ums-writefile"
+Value WriteFileTool(McpServer& server, const JsonObject& args) {
+    server.Log("ums-writefile (WriteFileTool) invoked. Args: " + AsJson(args));
+    if (!server.GetPermissions().allowWriteFiles) {
+        throw Exc("Permission denied: Write Files permission is required for 'ums-writefile' tool.");
+    }
+    String path = args.Get("path", "").ToString();
+    if (path.IsEmpty()) {
+        throw Exc("Argument error: 'path' is a required string argument for 'ums-writefile' tool.");
+    }
+    if (args.Find("data") < 0) {
+         throw Exc("Argument error: 'data' (string content) is a required argument for 'ums-writefile' tool.");
+    }
+    String data_to_save = args.Get("data", "").ToString();
     server.EnforceSandbox(path);
-    return PlaceholderToolLogic("save_data", server, args);
+    if (!SaveFile(path, data_to_save)) {
+        throw Exc("File system error: Failed to save data to file '" + path + "'. Check path and OS permissions.");
+    }
+    server.Log("ums-writefile success: Data saved to '" + path + "'.");
+    return true;
 }
 
 class McpApplication {
 public:
     McpApplication() : mcpServer(currentConfig.serverPort) {
-        installPath = GetExeFolder();
-        RLOG("MCP Server starting from: " + installPath);
+        installPath = GetExeFolder(); RLOG("MCP Server starting from: " + installPath);
         cfgDir = NormalizePath(AppendFileName(installPath, "config"));
         if (!DirectoryExists(cfgDir)) RealizeDirectory(cfgDir);
         logDir = NormalizePath(AppendFileName(cfgDir, "log"));
         if (!DirectoryExists(logDir)) RealizeDirectory(logDir);
-        logFilePath = NormalizePath(AppendFileName(logDir, "mcpserver.log"));
-        RLOG("Log file path: " + logFilePath);
+        logFilePath = NormalizePath(AppendFileName(logDir, "mcpserver.log")); RLOG("Log file path: " + logFilePath);
         cfgPath = NormalizePath(AppendFileName(cfgDir, "config.json"));
         if (!ConfigManager::Load(cfgPath, currentConfig)) {
             RLOG("Configuration missing or invalid (" + cfgPath + "); resetting to defaults.");
-            currentConfig = Config();
-            ConfigManager::Save(cfgPath, currentConfig);
+            currentConfig = Config(); ConfigManager::Save(cfgPath, currentConfig);
             RLOG("Default configuration saved to: " + cfgPath);
-        } else {
-            RLOG("Configuration loaded successfully from: " + cfgPath);
-        }
-        mcpServer.SetPort(currentConfig.serverPort);
-        mcpServer.ConfigureBind(current_config.bindAllInterfaces);
+        } else { RLOG("Configuration loaded successfully from: " + cfgPath); }
 
-        // Setup log callback for McpServer FIRST
         mcpServer.SetLogCallback([this](const String& msg) { ProcessServerLogMessage(msg); });
-        mcpServer.Log("McpApplication initialized. McpServer log callback configured."); // Now McpServer can log
+        mcpServer.SetPort(currentConfig.serverPort);
+        mcpServer.ConfigureBind(currentConfig.bindAllInterfaces);
+        mcpServer.Log("McpApplication initialized. McpServer log callback configured.");
+        RegisterTools(); // Register tools with new names
 
-        RegisterTools(); // Register tools AFTER log callback is set, so AddTool can log.
-
-        Ctrl::Initialize();
-        Ctrl::SetLanguage(LNG_ENGLISH);
+        Ctrl::Initialize(); Ctrl::SetLanguage(LNG_ENGLISH);
         mainWindow.Create(mcpServer, currentConfig);
-        mainWindow.Sizeable().Zoomable().CenterScreen();
-        mainWindow.Run();
+        mainWindow.Sizeable().Zoomable().CenterScreen(); mainWindow.Run();
     }
     ~McpApplication() { RLOG("McpApplication shutting down."); }
 private:
     void RegisterTools() {
         auto Register = [&](const String& name, const String& desc, const JsonObject& params, auto func) {
             ToolDefinition def; def.description = desc; def.parameters = params;
-            def.func = [this, func, name](const JsonObject& args) { return func(mcpServer, args); };
-            mcpServer.AddTool(name, def); // AddTool will log via McpServer::Log
+            def.func = [this, func](const JsonObject& args) -> Value { return func(this->mcpServer, args); };
+            mcpServer.AddTool(name, def); // Name used here is the key
         };
-        Register("read_file", "Reads content of a file (stub). Requires Read Files.",
-                 JsonObject("path", JsonObject("type","string")), ReadFileTool);
-        Register("calculate", "Performs calculations (stub).",
-                 JsonObject("a", JsonObject("type","number"))("b", JsonObject("type","number"))("op", JsonObject("type","string")), CalculateTool);
-        Register("create_dir", "Creates a directory (stub). Requires Create Dirs.",
-                 JsonObject("path", JsonObject("type","string")), CreateDirTool);
-        Register("list_dir", "Lists directory contents (stub). Requires Search Dirs.",
-                 JsonObject("path", JsonObject("type","string")("optional",true)), ListDirTool);
-        Register("save_data", "Saves data to a file (stub). Requires Write Files.",
-                 JsonObject("path", JsonObject("type","string"))("data", JsonObject("type","string")), SaveDataTool);
-        // mcpServer.Log("All standard tools registered with placeholder logic."); // AddTool logs individually
+
+        JsonObject params; // Re-use params object for clarity for each tool
+
+        params.Clear(); // ums-readfile
+        params("path", JsonObject("type", "string")("description", "Full path to a text file."));
+        Register("ums-readfile", "Read a text file’s full contents. Requires Read Files and sandbox.", params, ReadFileTool);
+
+        params.Clear(); // ums-calc
+        params("a", JsonObject("type","number")("description","First operand"))
+              ("b", JsonObject("type","number")("description","Second operand"))
+              ("operation", JsonObject("type","string")("description","\"add\"|\"subtract\"|\"multiply\"|\"divide\""));
+        Register("ums-calc", "Perform add, subtract, multiply, divide on two numbers.", params, CalculateTool);
+
+        params.Clear(); // ums-createdir
+        params("path", JsonObject("type","string")("description","Full path for new folder."));
+        Register("ums-createdir", "Create directory at specified path. Requires Create Directories and sandbox.", params, CreateDirTool);
+
+        params.Clear(); // ums-listdir
+        params("path", JsonObject("type","string")("optional", true)("description","Directory path (defaults to current)."));
+        Register("ums-listdir", "List files and folders in a directory. Requires Search Directories and sandbox.", params, ListDirTool);
+
+        params.Clear(); // ums-writefile (was save_data)
+        params("path", JsonObject("type","string")("description","Full file path."))
+              ("data", JsonObject("type","string")("description","Text content to write."));
+        Register("ums-writefile", "Write text to file at given path. Requires Write Files and sandbox.", params, WriteFileTool); // Changed to WriteFileTool
+
+        mcpServer.Log("All standard tools registered with new names for main server instance.");
     }
     void ProcessServerLogMessage(const String& msg) {
         String timestampedMsg = "[" + FormatIso8601(GetSysTime()) + "] [Server] " + msg;
         RLOG(timestampedMsg);
-        if (mainWindow.IsOpen()) { mainWindow.AppendLog(msg); } // McpServerWindow.AppendLog adds its own timestamp
+        if (mainWindow.IsOpen()) { mainWindow.AppendLog(msg); }
         FileAppend logFile(logFilePath);
         if(logFile.IsOpen()) { logFile.PutLine(timestampedMsg); logFile.Close(); }
         else { StdLog().Put("CRITICAL: Failed to open main log file for appending: " + logFilePath + "\nMessage: " + timestampedMsg + "\n");}
@@ -140,11 +205,9 @@ private:
     String installPath, cfgDir, logDir, cfgPath, logFilePath;
     Config currentConfig; McpServer mcpServer; McpServerWindow mainWindow;
 };
-
 CONSOLE_APP_MAIN {
     StdLogSetup(LOG_FILE | LOG_TIMESTAMP | LOG_APPEND, NormalizePath(AppendFileName(GetExeFolder(), "mcpserver_startup.log")));
-    SetExitCode(0);
-    RLOG("Application starting...");
+    SetExitCode(0); RLOG("Application starting...");
     McpApplication mcp_app;
     RLOG("Application main function finished. Exit code: " + AsString(GetExitCode()));
 }

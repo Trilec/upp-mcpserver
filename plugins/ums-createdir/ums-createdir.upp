@@ -1,4 +1,4 @@
-name "FileManagerExample";
+name "ums-createdir-plugin"; // Updated package name
 type executable;
 
 uses
