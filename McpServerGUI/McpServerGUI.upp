@@ -1,0 +1,25 @@
+// U++ Package file for the McpServerGUI application
+// Located in McpServerGUI/
+
+name "McpServerGUI";
+type executable;
+
+uses
+	Core,
+	CtrlLib,
+	mcp_server_lib;  // Depends on mcp_server_lib package
+
+// List of files belonging to this package.
+// Paths are relative to this .upp file's location (McpServerGUI/).
+file
+	"Main.cpp",
+	"McpServerWindow.h" header,
+	"McpServerWindow.cpp",
+	"McpSplash.h" header,
+	"McpSplash.cpp";
+	// .layout files are embedded via .iml or #define LAYOUTFILE / #include <CtrlCore/lay.h> in headers.
+
+mainconfig
+	"" = "";
+
+options(GCC, CLANG, MSC) "-std=c++17";

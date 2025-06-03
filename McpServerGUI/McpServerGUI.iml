@@ -1,0 +1,20 @@
+// U++ Image and Layout embedding file for McpServerGUI
+// Located in McpServerGUI/
+
+// Layout files (now local to this package directory)
+layout McpServerWindow.layout;
+layout McpSplash.layout;
+
+// Icon files (now in local 'icons' subdirectory)
+image icons/config.png;
+image icons/logs.png;
+image icons/perm_attr.png;
+image icons/perm_create.png;
+image icons/perm_external.png;
+image icons/perm_ipc.png;
+image icons/perm_network.png;
+image icons/perm_read.png;
+image icons/perm_rename.png;
+image icons/perm_search.png;
+image icons/perm_write.png;
+image icons/tools.png;

@@ -3,7 +3,7 @@
 
 #include <CtrlLib/CtrlLib.h>
 
-#define LAYOUTFILE <upp-mcpserver/ui/McpSplash.layout> // Path relative to project's main .upp file
+#define LAYOUTFILE "McpSplash.layout" // Path relative to this .h file, now local
 #include <CtrlCore/lay.h>
 
 // Forward declarations
