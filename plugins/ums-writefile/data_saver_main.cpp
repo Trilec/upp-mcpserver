@@ -1,6 +1,7 @@
 #include "../../include/McpServer.h"
 #include <Core/Core.h>
-#include <Json/Json.h>
+#include <Core/Json.h> // For JsonObject, JsonArray, Value
+#include <Core/ValueUtil.h> // For AsJson for logging (if used)
 
 // Renamed SaveDataToolLogic to WriteFileToolLogic
 JsonValue WriteFileToolLogic(McpServer& server, const JsonObject& args){

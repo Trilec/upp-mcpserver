@@ -1,6 +1,7 @@
 #include "../../include/McpServer.h"
 #include <Core/Core.h>
-#include <Json/Json.h>
+#include <Core/Json.h> // For JsonObject, JsonArray, Value
+#include <Core/ValueUtil.h> // For AsJson for logging (if used)
 
 JsonValue CreateDirToolLogic(McpServer& server, const JsonObject& args){
     if(!server.GetPermissions().allowCreateDirs)throw Exc("Permission denied: Create Directories permission is required for 'ums-createdir' tool.");

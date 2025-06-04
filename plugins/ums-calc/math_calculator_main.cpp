@@ -1,6 +1,7 @@
 #include "../../include/McpServer.h"
 #include <Core/Core.h>
-#include <Json/Json.h>
+#include <Core/Json.h> // For JsonObject, JsonArray, Value
+#include <Core/ValueUtil.h> // For AsJson for logging (if used)
 
 JsonValue CalculateToolLogic(McpServer& server, const JsonObject& args){ // Added server ref for consistency, though not used
     Value va=args.Get("a"),vb=args.Get("b"); String op=args.Get("operation","").ToString();

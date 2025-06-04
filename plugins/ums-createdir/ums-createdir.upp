@@ -1,13 +1,8 @@
-name "ums-createdir-plugin"; // Updated package name
+name "ums-createdir-plugin";
 type executable;
-
 uses
-	Core,
-	Json,
-	WebSockets,
+	Core, // WebSockets (and Json) removed
 	mcp_server_lib;
-
 file
 	"file_manager_main.cpp";
-
 options(GCC, CLANG, MSC) "-std=c++17";

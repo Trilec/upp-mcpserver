@@ -1,25 +1,12 @@
-// U++ Package file for the McpServer core library (mcp_server_lib)
-// Located in mcp_server_lib/
-
 name "mcp_server_lib";
 type static_library;
-
 uses
-	Core,
-	Json,
-	WebSockets;
+	Core; // WebSockets (and Json) removed
 
-// List of files belonging to this package.
-// Paths are relative to this .upp file's location (mcp_server_lib/).
 file
-	// Public Header from top-level include directory
 	"../include/McpServer.h" header,
-
-	// Private header (now local to this package directory)
 	"ConfigManager.h" header,
-
-	// Source files (now local to this package directory)
+	"WebSocket.h" header, // Make the new WebSocket.h part of this library's interface
 	"McpServer.cpp",
 	"ConfigManager.cpp";
-
 options(GCC, CLANG, MSC) "-std=c++17";

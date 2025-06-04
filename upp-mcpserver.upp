@@ -1,29 +1,16 @@
 // Main U++ package file for the MCP Server project
-// This file typically groups other packages.
-
 uses
 	Core,
-	CtrlLib,
-	Json,
-	WebSockets;
+	CtrlLib; // WebSockets removed (and Json was removed previously)
 
 group "Library";
-	package mcp_server_lib type static_library uses Core, Json, WebSockets file "mcp_server_lib/mcp_server_lib.upp"; // Updated path
+	package mcp_server_lib type static_library uses Core file "mcp_server_lib/mcp_server_lib.upp"; // WebSockets (and Json) removed
 
 group "Application";
-	package McpServerGUI type executable uses Core, CtrlLib, mcp_server_lib file "McpServerGUI/McpServerGUI.upp"; // Updated path
+	package McpServerGUI type executable uses Core, CtrlLib, mcp_server_lib file "McpServerGUI/McpServerGUI.upp"; // No WebSockets here directly
 
 group "Plugins";
-	// Plugin packages (.upp files) are expected to be in their respective subdirectories
-	// (e.g., plugins/ums-readfile/ums-readfile.upp)
-	// TheIDE will discover them when the main 'upp-mcpserver.upp' assembly is loaded.
-
 group "Tests";
-	// Test package (.upp file) is expected in tests/McpServerTests.upp
-	// package McpServerTests type executable uses Core, Test, mcp_server_lib file "tests/McpServerTests.upp";
-    // This line can be uncommented if tests/McpServerTests.upp is intended to be explicitly part of this assembly.
-    // For now, TheIDE can discover it if tests/ is a sub-folder.
 
-main_package "Application"; // Specifies that McpServerGUI is the default build target.
-
+main_package "Application";
 options(GCC, CLANG, MSC) "-std=c++17";

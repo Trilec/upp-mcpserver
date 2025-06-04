@@ -1,13 +1,8 @@
-name "ums-listdir-plugin"; // Updated package name
+name "ums-listdir-plugin";
 type executable;
-
 uses
-	Core,
-	Json,
-	WebSockets,
+	Core, // WebSockets (and Json) removed
 	mcp_server_lib;
-
 file
 	"simple_dir_explorer_main.cpp";
-
 options(GCC, CLANG, MSC) "-std=c++17";

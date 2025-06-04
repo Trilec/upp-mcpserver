@@ -1,5 +1,5 @@
 #include "ConfigManager.h" // Defines Config struct and ConfigManager class
-#include <Json/Json.h>    // For Json parsing (LoadFromJson, StoreAsJson)
+#include <Core/Json.h>    // For Json parsing (ParseJSON, StoreAsJson)
 #include <sys/stat.h>  // for chmod on POSIX, as per pseudocode
 
 // Note: <Core/Core.h> provides FileExists, FileIn, FileOut, LOG, GetFileFolder, DirectoryExists, RealizeDirectory

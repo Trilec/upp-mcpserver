@@ -1,13 +1,8 @@
-name "ums-calc-plugin"; // Updated package name
+name "ums-calc-plugin";
 type executable;
-
 uses
-	Core,
-	Json,
-	WebSockets,
+	Core, // WebSockets (and Json) removed
 	mcp_server_lib;
-
 file
 	"math_calculator_main.cpp";
-
 options(GCC, CLANG, MSC) "-std=c++17";

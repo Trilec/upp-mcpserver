@@ -1,6 +1,7 @@
 #include "../../include/McpServer.h"
 #include <Core/Core.h>
-#include <Json/Json.h>
+#include <Core/Json.h> // For JsonObject, JsonArray, Value (though Core.h might cover some)
+#include <Core/ValueUtil.h> // For AsJson for logging (if used, EscapeJSON is from Core/Core.h)
 
 JsonValue ReadFileToolLogic(McpServer& server, const JsonObject& args) {
     if (!server.GetPermissions().allowReadFiles) throw Exc("Permission denied: Read Files permission is required for 'ums-readfile' tool.");
