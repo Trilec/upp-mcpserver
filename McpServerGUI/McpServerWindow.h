@@ -4,12 +4,14 @@
 #include <CtrlLib/CtrlLib.h>
 
 // This is how U++ includes the .layout file to generate the WithMyWindowLayout<> template
-#define LAYOUTFILE <McpServerGUI/McpServerWindow.layout>
+#define LAYOUTFILE "McpServerWindow.layout"
 #include <CtrlCore/lay.h>
 
 // Forward declarations or includes for classes used
-class McpServer; // From #include "../include/McpServer.h"
-struct Config;   // From #include "ConfigManager.h"
+#include "../include/McpServer.h" // For McpServer class definition
+#include <mcp_server_lib/ConfigManager.h> // For Config struct definition
+
+using namespace Upp;
 
 class McpServerWindow : public WithMcpServerWindowLayout<TopWindow> {
 public:

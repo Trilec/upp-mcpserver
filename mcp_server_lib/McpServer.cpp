@@ -1,4 +1,4 @@
-#include "McpServer.h" // Uses ../mcp_server_lib/WebSocket.h internally via this include
+#include "../include/McpServer.h" // Correct path to its own header
 #include <Core/Json.h>     // For ParseJSON, StoreAsJson
 #include <Core/ValueUtil.h>  // For AsJson, GetErrorText
 

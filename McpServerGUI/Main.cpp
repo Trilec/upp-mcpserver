@@ -5,7 +5,7 @@
 
 #include <CtrlLib/CtrlLib.h>
 #include "../include/McpServer.h" // Path relative to McpServerGUI/
-#include "ConfigManager.h"       // Assuming this resolves via U++ package system from mcp_server_lib
+#include <mcp_server_lib/ConfigManager.h> // For Config struct & ConfigManager class
 #include "McpServerWindow.h"
 #include <Core/Compress/Compress.h>
 #include <Core/IO/FileStrm.h>

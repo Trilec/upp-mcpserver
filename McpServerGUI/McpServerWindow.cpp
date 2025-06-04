@@ -4,7 +4,7 @@
  */
 #include "McpServerWindow.h"
 #include "../include/McpServer.h"
-#include "ConfigManager.h"
+#include <mcp_server_lib/ConfigManager.h> // For Config struct & ConfigManager class
 #include "McpSplash.h"
 #include <CtrlLib/CtrlLib.h>
 

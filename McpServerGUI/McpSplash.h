@@ -3,7 +3,7 @@
 
 #include <CtrlLib/CtrlLib.h>
 
-#define LAYOUTFILE <McpServerGUI/McpSplash.layout>
+#define LAYOUTFILE "McpSplash.layout"
 #include <CtrlCore/lay.h>
 
 // Forward declarations
