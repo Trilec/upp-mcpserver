@@ -4,7 +4,7 @@
 #include <CtrlLib/CtrlLib.h>
 
 // This is how U++ includes the .layout file to generate the WithMyWindowLayout<> template
-#define LAYOUTFILE "McpServerWindow.layout" // Path relative to this .h file, now local
+#define LAYOUTFILE <McpServerGUI/McpServerWindow.layout>
 #include <CtrlCore/lay.h>
 
 // Forward declarations or includes for classes used
