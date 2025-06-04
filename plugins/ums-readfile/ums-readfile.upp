@@ -5,4 +5,4 @@ uses
 	mcp_server_lib;
 file
 	"file_reader_main.cpp";
-options(GCC, CLANG, MSC) "-std=c++17";
+cxxflags "-std=c++17";

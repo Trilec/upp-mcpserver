@@ -20,7 +20,7 @@ file
 	"test_permissions.cpp";
 	// If more test files are added, list them here.
 
-options(GCC, CLANG, MSC) "-std=c++17";
+cxxflags "-std=c++17";
 
 // When using the "Test" package from U++, it often provides a main entry point
 // that automatically runs all TEST_CASEs found in the linked files.

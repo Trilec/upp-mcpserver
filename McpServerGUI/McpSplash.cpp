@@ -4,7 +4,9 @@
  */
 #include "McpSplash.h"
 #include "../include/McpServer.h" // For McpServer class (mainly for config_ref context) and Permissions struct
-#include "ConfigManager.h"     // For Config struct (via McpServer.h or directly if needed)
+#include <mcp_server_lib/ConfigManager.h>     // For Config struct
+
+using namespace Upp;
 
 McpSplash::McpSplash(TopWindow& owner, McpServer& server, const Config& config)
     : server_ref(server), config_ref(config) // Store references

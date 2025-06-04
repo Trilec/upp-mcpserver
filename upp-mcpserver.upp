@@ -13,4 +13,4 @@ group "Plugins";
 group "Tests";
 
 main_package "Application";
-options(GCC, CLANG, MSC) "-std=c++17";
+cxxflags "-std=c++17";

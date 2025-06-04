@@ -2,6 +2,8 @@
 #include <Core/Json.h>     // For ParseJSON, StoreAsJson
 #include <Core/ValueUtil.h>  // For AsJson, GetErrorText
 
+using namespace Upp;
+
 // Constructor
 McpServer::McpServer(int initial_port, const String& initial_path_prefix)
     : serverPort(initial_port),

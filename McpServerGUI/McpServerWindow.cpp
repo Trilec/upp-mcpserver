@@ -8,6 +8,8 @@
 #include "McpSplash.h"
 #include <CtrlLib/CtrlLib.h>
 
+using namespace Upp;
+
 McpServerWindow::McpServerWindow(McpServer& server, Config& cfg)
     : server_ref(server), current_config_ref(cfg)
 {

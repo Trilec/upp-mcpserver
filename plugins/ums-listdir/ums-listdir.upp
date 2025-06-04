@@ -5,4 +5,4 @@ uses
 	mcp_server_lib;
 file
 	"simple_dir_explorer_main.cpp";
-options(GCC, CLANG, MSC) "-std=c++17";
+cxxflags "-std=c++17";

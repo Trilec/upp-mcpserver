@@ -15,6 +15,8 @@
 #include <Core/Trace/Trace.h>
 #include <Core/ValueUtil.h>
 
+using namespace Upp;
+
 // Tool function implementations (remain the same)
 Value ReadFileTool(McpServer& server, const JsonObject& args) {
     server.Log("ums-readfile (ReadFileTool) invoked. Args: " + AsJson(args));
