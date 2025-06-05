@@ -7,17 +7,19 @@ type executable;
 uses
 	Core,
 	CtrlLib,
-	mcp_server_lib;  // Depends on mcp_server_lib package
+	mcp_server_lib;
 
-// List of files belonging to this package.
-// Paths are relative to this .upp file's location (McpServerGUI/).
 file
+	// Layout files should be listed BEFORE the headers that include them via LAYOUTFILE
+	"McpServerWindow.layout",
+	"McpSplash.layout",
+
+	// Source and header files
 	"Main.cpp",
 	"McpServerWindow.h" header,
 	"McpServerWindow.cpp",
 	"McpSplash.h" header,
 	"McpSplash.cpp";
-	// .layout files are embedded via .iml or #define LAYOUTFILE / #include <CtrlCore/lay.h> in headers.
 
 mainconfig
 	"" = "";
