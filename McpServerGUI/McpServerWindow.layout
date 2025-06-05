@@ -9,16 +9,16 @@
     <HBox>
       <!-- Collapsible Sidebar (width=200) -->
       <VBox name="Sidebar" width="200">
-        <Button name="btnToolsIcon"    icon="ui/icons/tools.png"    text=" Tools"       />
-        <Button name="btnConfigIcon"   icon="ui/icons/config.png"   text=" Config"      />
-        <Button name="btnPermsIcon"    icon="ui/icons/perm_read.png" text=" Permissions" />
-        <Button name="btnSandboxIcon"  icon="ui/icons/perm_search.png" text=" Sandbox"     />
-        <Button name="btnLogsIcon"     icon="ui/icons/logs.png"     text=" Logs"        />
+        <Button name="btnToolsIcon"    icon="icons/tools.png"    text=" Tools"       />
+        <Button name="btnConfigIcon"   icon="icons/config.png"   text=" Config"      />
+        <Button name="btnPermsIcon"    icon="icons/perm_read.png" text=" Permissions" />
+        <Button name="btnSandboxIcon"  icon="icons/perm_search.png" text=" Sandbox"     />
+        <Button name="btnLogsIcon"     icon="icons/logs.png"     text=" Logs"        />
       </VBox>
 
       <!-- StackCtrl: one panel per sidebar button -->
       <StackCtrl name="MainStack">
-        <!-- Tools Panel -->
+        <!-- Tools Panel (Index 0) -->
         <VBox name="ToolsPanel">
           <HBox>
             <Label text="Available Tools" />
@@ -33,7 +33,7 @@
             <Button name="btnStop"  text="Stop Server" />
           </HBox>
         </VBox>
-        <!-- Configuration Panel -->
+        <!-- Configuration Panel (Index 1) -->
         <VBox name="ConfigPanel">
           <HBox>
             <Label text="Server Port:" />
@@ -43,9 +43,9 @@
             <Label text="Bind To:" />
             <DropList name="bindList" items="127.0.0.1;0.0.0.0" />
           </HBox>
-          <Label name="lblInstallPathConfig" text="Installed at: {InstallPath}" /> <!-- Changed name to avoid conflict -->
+          <Label name="lblInstallPathConfig" text="Installed at: {InstallPath}" />
         </VBox>
-        <!-- Permissions Panel -->
+        <!-- Permissions Panel (Index 2) -->
         <VBox name="PermsPanel">
           <CheckBox name="chkRead"    text="Read Files"            />
           <CheckBox name="chkWrite"   text="Write Files"           />
@@ -59,7 +59,7 @@
           <CheckBox name="chkAttr"    text="Change Attributes"       />
           <CheckBox name="chkIPC"     text="IPC (Pipes/Sockets)"     />
         </VBox>
-        <!-- Sandbox Panel -->
+        <!-- Sandbox Panel (Index 3) -->
         <VBox name="SandboxPanel">
           <Label text="Allowed Folders (Sandbox Roots):" />
           <ArrayCtrl name="sandboxRootsList" columns="Path" />
@@ -68,7 +68,7 @@
             <Button name="btnRemoveRoot" text="Remove"    />
           </HBox>
         </VBox>
-        <!-- Logs Panel -->
+        <!-- Logs Panel (Index 4) -->
         <VBox name="LogsPanel">
           <Label text="Log:" />
           <EditString name="logConsole" multiLine="true" readOnly="true" />
