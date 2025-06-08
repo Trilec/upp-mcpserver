@@ -1,27 +1,18 @@
-// U++ Package file for the McpServerGUI application
-// Located in McpServerGUI/
-
-name "McpServerGUI";
-type executable;
-
 uses
 	Core,
 	CtrlLib,
 	mcp_server_lib;
 
 file
-	// Layout files should be listed BEFORE the headers that include them via LAYOUTFILE
-	"McpServerWindow.layout",
-	"McpSplash.layout",
-
-	// Source and header files
-	"Main.cpp",
-	"McpServerWindow.h" header,
-	"McpServerWindow.cpp",
-	"McpSplash.h" header,
-	"McpSplash.cpp";
+	for,
+	//,
+	McpSplash.layout,
+	//,
+	McpServerWindow.h,
+	McpServerWindow.cpp,
+	McpSplash.h,
+	McpSplash.cpp;
 
 mainconfig
 	"" = "";
 
-cxxflags "-std=c++17";
