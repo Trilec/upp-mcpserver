@@ -1,0 +1,7 @@
+name "MinimalWsClient";
+type executable;
+uses Core; // Only Core needed
+file
+    "WebSocket.h" header,
+    "Main.cpp";
+cxxflags "-std=c++17";
