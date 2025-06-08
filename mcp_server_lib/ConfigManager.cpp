@@ -68,13 +68,26 @@ bool ConfigManager::Load(const String& path, Config& out) {
             for(int i=0;i<rootsArray.GetCount();i++){if(rootsArray[i].Is<String>())out.sandboxRoots.Add(rootsArray[i].ToString());}
         } else { out.sandboxRoots = default_cfg.sandboxRoots; LOG("ConfigManager::Load - 'sandboxRoots' not array, using defaults.");}
 
-        out.serverPort= AnteValue(root.Get("serverPort"), default_cfg.serverPort).To<int>();
-        out.bindAllInterfaces= AnteValue(root.Get("bindAllInterfaces"), default_cfg.bindAllInterfaces).To<bool>();
-        out.maxLogSizeMB= AnteValue(root.Get("maxLogSizeMB"), default_cfg.maxLogSizeMB).To<int>();
-        out.ws_path_prefix= AnteValue(root.Get("ws_path_prefix"), default_cfg.ws_path_prefix).ToString();
-        out.use_tls= AnteValue(root.Get("use_tls"), default_cfg.use_tls).To<bool>();
-        out.tls_cert_path= AnteValue(root.Get("tls_cert_path"), default_cfg.tls_cert_path).ToString();
-        out.tls_key_path= AnteValue(root.Get("tls_key_path"), default_cfg.tls_key_path).ToString();
+        Value v = root.Get("serverPort", default_cfg.serverPort);
+        out.serverPort = v.To<int>();
+
+        v = root.Get("bindAllInterfaces", default_cfg.bindAllInterfaces);
+        out.bindAllInterfaces = v.To<bool>();
+
+        v = root.Get("maxLogSizeMB", default_cfg.maxLogSizeMB);
+        out.maxLogSizeMB = v.To<int>();
+
+        v = root.Get("ws_path_prefix", default_cfg.ws_path_prefix);
+        out.ws_path_prefix = v.ToString();
+
+        v = root.Get("use_tls", default_cfg.use_tls);
+        out.use_tls = v.To<bool>();
+
+        v = root.Get("tls_cert_path", default_cfg.tls_cert_path);
+        out.tls_cert_path = v.ToString();
+
+        v = root.Get("tls_key_path", default_cfg.tls_key_path);
+        out.tls_key_path = v.ToString();
 
         if(out.ws_path_prefix.IsEmpty()||!out.ws_path_prefix.StartsWith("/")){
             LOG("ConfigManager::Load - ws_path_prefix '"+out.ws_path_prefix+"' invalid, reset to default.");
