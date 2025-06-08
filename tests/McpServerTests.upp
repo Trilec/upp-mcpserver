@@ -1,38 +1,16 @@
 // U++ Package file for McpServerTests
-
 name "McpServerTests";
-type executable; // Console executable for running tests
+type executable;
 
 uses
-	Core,
-	Test, // U++ Test framework
-	mcp_server_lib; // Depends on our core server library for testing its components
-
-// List of test files.
-// If each test_*.cpp is a separate TEST_APP_MAIN or CONSOLE_APP_MAIN,
-// then each would need to be its own executable or linked into a test runner.
-// For simplicity with U++ Test framework, often all test files are compiled
-// into a single executable that runs all tests.
-// The U++ Test package itself provides a main for this if files contain TEST_CASEs.
+    Core,
+    Test,
+    mcp_server_lib;
 
 file
-	"test_sandbox.cpp",
-	"test_permissions.cpp";
-	// If more test files are added, list them here.
+    "test_helpers.h", // header only
+    "test_sandbox.cpp",
+    "test_permissions.cpp",
+    "test_main.cpp";
 
 cxxflags "-std=c++17";
-
-// When using the "Test" package from U++, it often provides a main entry point
-// that automatically runs all TEST_CASEs found in the linked files.
-// So, individual test_*.cpp files should use TEST_CASE(...) for their tests,
-// and not necessarily have their own CONSOLE_APP_MAIN if using Test package's runner.
-// The stubs I created for test_sandbox.cpp and test_permissions.cpp currently
-// have CONSOLE_APP_MAIN. This will need to be refactored if using Test:: globally.
-// For now, this .upp file will make them linkable. If they are separate mains,
-// TheIDE would build them as separate targets if this .upp was structured differently
-// (e.g. one .upp per test file or using custom build steps).
-// Given 'type executable' and multiple .cpp files, this implies they are part of the
-// same executable. One of them must supply the main() or Test package does.
-// Let's assume for now the Test package will provide the main and run tests from both files.
-// This means test_*.cpp files should be refactored to use TEST_CASEs instead of CONSOLE_APP_MAIN.
-// This refactoring is outside the scope of this "create .upp file" step.
