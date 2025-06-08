@@ -134,9 +134,9 @@ void McpServerWindow::AppendLog(const String& text) {
 
 void McpServerWindow::UpdateStatusDisplay() {
     if (server_ref.IsListening()) {
-        String actual_host_display = server_ref.GetListenHost(); // U++ WebSocketServer provides this
-         // Fallback if GetListenHost isn't implemented or returns empty on minimal server
-        if(actual_host_display.IsEmpty()) actual_host_display = current_config_ref.bindAllInterfaces ? "0.0.0.0" : "127.0.0.1";
+        // The minimal server implementation does not provide GetListenHost().
+        // Determine the host from our bind setting instead.
+        String actual_host_display = server_ref.GetBindAllInterfaces() ? "0.0.0.0" : "127.0.0.1";
         lblStatus = "Status: Running on " + actual_host_display + ":" + AsString(server_ref.GetPort());
     } else {
         lblStatus = "Status: Stopped";
