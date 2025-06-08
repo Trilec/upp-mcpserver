@@ -53,17 +53,11 @@ U++ MCP Server is a server application built with the [U++ framework](https://ww
 6.  **Build and Run** (e.g., by pressing F5 or using the build menu).
     You can also select individual plugin executables (e.g., `ums-readfile-plugin`) as targets to build and run them independently.
 
-**Using CMake (Placeholder - Detailed U++ CMake setup is complex)**:
+**Using CMake**:
 
-A full CMake build system for U++ projects requires proper handling of U++'s package system. The provided `CMakeLists.txt` files are basic placeholders.
-```bash
-# Placeholder commands - actual U++ CMake build is more involved
-# mkdir build && cd build
-# cmake ..
-# make
-# ./McpServerGUI
-# ./plugins/ums-readfile/ums-readfile-main # Example of running a plugin
-```
+Previously the repository contained placeholder `CMakeLists.txt` files. These
+files have been removed to avoid confusion. At the moment the recommended way to
+build the project is with U++'s TheIDE using the provided `.upp` packages.
 
 ### First Run
 
