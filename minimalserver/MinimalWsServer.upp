@@ -1,0 +1,7 @@
+name "MinimalWsServer";
+type executable;
+uses Core; // Only Core needed for this simple server
+file
+    "WebSocket.h" header, // List WebSocket.h as part of the package
+    "Main.cpp";
+cxxflags "-std=c++17";
