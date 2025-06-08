@@ -54,9 +54,9 @@ void McpSplash::UpdateInfoText()
 {
     StringStream ss; // Use StringStream to build the display text
 
-    // Application Name and Version (example)
-    ss << "MCP Server v0.1.0 (Alpha)\n"; // TODO: Make version dynamic
-    ss << "Copyright (c) YYYY [Your Name Here]\n\n"; // TODO: Update copyright year/name
+    // Application Name and Version
+    ss << "MCP Server v" << MCP_SERVER_VERSION << " (Alpha)\n";
+    ss << "Copyright (c) 2025 Curtis\n\n";
 
     // Active Permissions
     ss << "**Current Permissions:**\n";

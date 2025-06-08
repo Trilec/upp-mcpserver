@@ -2,6 +2,9 @@
 #include <Core/Core.h>
 #include "../mcp_server_lib/WebSocket.h"
 
+// Current application version
+constexpr const char* MCP_SERVER_VERSION = "0.1.0";
+
 using namespace Upp;
 
 struct Permissions { /* ... remains same ... */
