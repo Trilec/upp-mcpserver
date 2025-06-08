@@ -1,25 +1,21 @@
 // Main U++ package file for the MCP Server project
-// TEMPORARILY MODIFIED FOR MINIMAL WEBSOCKET TEST
-
 uses
-	Core,
-	CtrlLib;
+        Core,
+        CtrlLib;
 
-/*
 group "Library";
-	package mcp_server_lib type static_library uses Core file "mcp_server_lib/mcp_server_lib.upp";
+        package mcp_server_lib type static_library uses Core file "mcp_server_lib/mcp_server_lib.upp";
 
 group "Application";
-	package McpServerGUI type executable uses Core, CtrlLib, mcp_server_lib file "McpServerGUI/McpServerGUI.upp";
+        package McpServerGUI type executable uses Core, CtrlLib, mcp_server_lib file "McpServerGUI/McpServerGUI.upp";
 
 group "Plugins";
 group "Tests";
-*/
 
-group "Minimal WebSocket Tests";
-	package MinimalWsServer type executable uses Core file "minimalserver/MinimalWsServer.upp";
-	package MinimalWsClient type executable uses Core file "minimalclient/MinimalWsClient.upp";
+group "Minimal WebSocket Tests"; // Optional examples
+        package MinimalWsServer type executable uses Core file "minimalserver/MinimalWsServer.upp";
+        package MinimalWsClient type executable uses Core file "minimalclient/MinimalWsClient.upp";
 
-main_package "MinimalWsServer"; // Explicitly set MinimalWsServer as a default target
+main_package "McpServerGUI";
 
 cxxflags "-std=c++17";
